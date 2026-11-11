@@ -1,10 +1,11 @@
-import Navbar from './Components/Navbar';
+import { Routes, Route } from 'react-router-dom';
+import LandingPage from './Pages/LandingPage';
 
 function App() {
   return (
-    <div className="min-h-screen bg-[#faf9f6]">
-      <Navbar />
-    </div>
+     <Routes>
+      <Route path="/" element={<LandingPage />} />
+    </Routes>
   );
 }
 
