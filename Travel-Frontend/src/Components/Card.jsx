@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React,{ useState } from 'react';
 import { ArrowUpRight, ChevronRight, ChevronLeft, Bed, Tent, Palmtree, Check } from 'lucide-react';
 
 const slides = [
