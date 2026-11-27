@@ -20,6 +20,7 @@ import {
   X
 } from 'lucide-react';
 import Footer from '../Components/Footer';
+import { getTour } from '../services/api';
 
 // --- Mock Data (Same as ProductPage) ---
 const TOURS = [
@@ -692,7 +693,7 @@ const GuideIdCard = ({ guide, isSelected, onToggle }) => (
 const DetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const tour = TOURS.find(t => t.id === parseInt(id));
+  const [tour, setTour] = useState(() => TOURS.find(t => t.id === parseInt(id)));
 
   const [guests, setGuests] = useState(2);
   const [date, setDate] = useState('');
@@ -703,6 +704,17 @@ const DetailPage = () => {
   // Scroll to top when component mounts or ID changes
   useEffect(() => {
     window.scrollTo(0, 0);
+    let active = true;
+
+    getTour(id)
+      .then(data => {
+        if (active) setTour(data);
+      })
+      .catch(error => console.error('Unable to load tour from the API:', error));
+
+    return () => {
+      active = false;
+    };
   }, [id]);
 
   // Mock Extras

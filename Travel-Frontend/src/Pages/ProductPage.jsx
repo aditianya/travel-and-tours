@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   MapPin,
@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import Navbar from '../Components/Navbar';
 import Footer from '../Components/Footer';
+import { getTours } from '../services/api';
 
 // --- Mock Data (Expanded) ---
 const TOURS = [
@@ -483,8 +484,8 @@ const TOURS = [
 ];
 
 // --- Comparison Component ---
-const ComparisonView = ({ selectedIds, onClose, onRemove }) => {
-  const selectedTours = TOURS.filter(t => selectedIds.includes(t.id));
+const ComparisonView = ({ tours, selectedIds, onClose, onRemove }) => {
+  const selectedTours = tours.filter(t => selectedIds.includes(t.id));
   const gridCols = selectedTours.length === 2 ? 'grid-cols-3' : selectedTours.length === 3 ? 'grid-cols-4' : 'grid-cols-5';
 
   return (
@@ -704,6 +705,7 @@ const ActiveFilterTag = ({ label, onRemove }) => (
 
 const ProductPage = () => {
   // --- STATE ---
+  const [tours, setTours] = useState(TOURS);
   const [viewMode, setViewMode] = useState('list'); // 'grid' | 'list'
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(() => {
@@ -721,6 +723,14 @@ const ProductPage = () => {
   // Comparison State
   const [compareList, setCompareList] = useState([]); // Array of IDs
   const [showCompareModal, setShowCompareModal] = useState(false);
+
+  useEffect(() => {
+    getTours()
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) setTours(data);
+      })
+      .catch(error => console.error('Unable to load tours from the API:', error));
+  }, []);
 
   // --- CONFIG ---
   const categories = ["City", "Nature", "Culture", "Relaxation", "Adventure"];
@@ -767,7 +777,7 @@ const ProductPage = () => {
 
   // --- FILTERING LOGIC ---
   const filteredTours = useMemo(() => {
-    return TOURS.filter(tour => {
+    return tours.filter(tour => {
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         if (!tour.title.toLowerCase().includes(query) && !tour.location.toLowerCase().includes(query)) {
@@ -797,7 +807,7 @@ const ProductPage = () => {
 
       return true;
     });
-  }, [searchQuery, selectedCategories, selectedDurations, maxPrice, minRating, durationRanges]);
+  }, [tours, searchQuery, selectedCategories, selectedDurations, maxPrice, minRating, durationRanges]);
 
   const activeFilterCount =
     selectedCategories.length +
@@ -845,6 +855,7 @@ const ProductPage = () => {
       {/* Comparison Modal Overlay */}
       {showCompareModal && (
         <ComparisonView
+          tours={tours}
           selectedIds={compareList}
           onClose={() => setShowCompareModal(false)}
           onRemove={(id) => setCompareList(prev => prev.filter(pid => pid !== id))}
@@ -903,7 +914,7 @@ const ProductPage = () => {
                   <Checkbox
                     key={cat}
                     label={cat}
-                    count={TOURS.filter(t => t.category === cat).length}
+                    count={tours.filter(t => t.category === cat).length}
                     checked={selectedCategories.includes(cat)}
                     onChange={() => handleCategoryChange(cat)}
                   />

@@ -1,11 +1,7 @@
 
 import { Link } from 'react-router-dom';
-import {
-  Instagram,
-  Facebook,
-  Twitter,
-  ArrowUpRight
-} from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
+import { FaFacebook, FaInstagram, FaTwitter } from 'react-icons/fa';
 
 const Footer = () => {
   return (
@@ -28,13 +24,13 @@ const Footer = () => {
 
             <div className="flex gap-4 mt-6">
               <a href="#instagram" aria-label="Instagram">
-                <Instagram />
+                <FaInstagram />
               </a>
               <a href="#facebook" aria-label="Facebook">
-                <Facebook />
+                <FaFacebook />
               </a>
               <a href="#twitter" aria-label="Twitter">
-                <Twitter />
+                <FaTwitter />
               </a>
             </div>
           </div>
